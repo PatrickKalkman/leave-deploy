@@ -1,22 +1,45 @@
-version: '3'
+version: '3.8'
 services:
-    model_serve_service:
-      image: x86_64/cassava-model-service:0.8.1
-      container_name: model_serve_service
-      networks:
-        - simp-network
-      environment:
-        MODEL_NAME: saved_model
-      networks:
-       - simp-network
-    model_api_service:
-      image: x86_64/cassava-prediction-service:0.8.1
-      container_name: model_api_service
-      environment:
-        SERVING_SERVICE: model_serve_service
-      ports:
-        - 8000:8000
-      networks:
-        - simp-network
+  reverse-proxy:
+    image: traefik:v2.4
+    command: 
+      - "--api.insecure=true" 
+      - "--providers.docker"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=simp-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  
+    networks:
+      - simp-network
+  model_service:
+    image: x86_64/cassava-model-service:0.8.1
+    container_name: model_service
+    networks:
+      - simp-network
+    environment:
+      MODEL_NAME: saved_model
+    expose:
+      - "8500"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.model_service.rule=Host(`model_service.localhost`)
+    networks:
+      - simp-network
+  model_api:
+    image: x86_64/cassava-prediction-service:0.8.1
+    container_name: model_api
+    environment:
+      SERVING_SERVICE: model_service
+    expose:
+      - "8000"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.model_api.rule=Host(`model_api.localhost`)
+    networks:
+      - simp-network
 networks:
   simp-network:
