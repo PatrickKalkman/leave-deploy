@@ -1,0 +1,22 @@
+version: '3'
+services:
+    model_serve_service:
+      image: x86_64/cassava-model-service:0.8.1
+      container_name: model_serve_service
+      networks:
+        - simp-network
+      environment:
+        MODEL_NAME: saved_model
+      networks:
+       - simp-network
+    model_api_service:
+      image: x86_64/cassava-prediction-service:0.8.1
+      container_name: model_api_service
+      environment:
+        SERVING_SERVICE: model_serve_service
+      ports:
+        - 8000:8000
+      networks:
+        - simp-network
+networks:
+  simp-network:

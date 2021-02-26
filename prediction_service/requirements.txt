@@ -1,0 +1,6 @@
+uvicorn==0.13.4
+fastapi==0.63.0
+python-multipart==0.0.5
+numpy~=1.19.5
+Pillow==7.0.0
+min-tfs-client==1.0.2
