@@ -10,11 +10,11 @@ services:
       - "8080:8080"
     labels:
       - traefik.enable=true
-      - traefik.docker.network=simp-network
+      - traefik.docker.network=pred-network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock  
     networks:
-      - simp-network
+      - pred-network
   model_service:
     image: x86_64/cassava-model-service:0.8.1
     container_name: model_service
@@ -22,24 +22,30 @@ services:
       - simp-network
     environment:
       MODEL_NAME: saved_model
-    expose:
-      - "8500"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.model_service.rule=Host(`model_service.localhost`)
     networks:
-      - simp-network
+      - pred-network
   model_api:
     image: x86_64/cassava-prediction-service:0.8.1
     container_name: model_api
     environment:
       SERVING_SERVICE: model_service
     expose:
-      - "8000"
+      - 8000
     labels:
       - traefik.enable=true
       - traefik.http.routers.model_api.rule=Host(`model_api.localhost`)
     networks:
-      - simp-network
+      - pred-network
+  model_ui:
+    image: x86_64/cassava-prediction-ui:0.8.1
+    container_name: model_ui
+    expose:
+      - 80
+      - 443
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.model_ui.rule=Host(`model_ui.localhost`)
+    networks:
+      - pred-network
 networks:
-  simp-network:
+  pred-network:
