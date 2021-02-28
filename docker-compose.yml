@@ -2,6 +2,7 @@ version: '3.8'
 services:
   reverse-proxy:
     image: traefik:v2.4
+    container_name: reverse-proxy
     command: 
       - "--api.insecure=true" 
       - "--providers.docker"
@@ -41,7 +42,6 @@ services:
     container_name: ui-service
     expose:
       - 80
-      - 443
     labels:
       - traefik.enable=true
       - traefik.http.routers.ui-service.rule=Host(`ui.service.localhost`)

@@ -44,9 +44,8 @@ def predict(input_image):
 app = FastAPI()
 
 origins = [
-    "http://localhost",
     "http://localhost:4200",
-    "http://model_ui.localhost"
+    "http://ui.service.localhost"
 ]
 
 app.add_middleware(
