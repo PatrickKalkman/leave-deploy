@@ -19,8 +19,6 @@ services:
   model-service:
     image: x86_64/cassava-model-service:0.8.1
     container_name: model-service
-    networks:
-      - simp-network
     environment:
       MODEL_NAME: saved_model
     networks:
